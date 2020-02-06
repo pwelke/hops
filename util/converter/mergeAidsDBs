@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+for f in $@; do
+	head -n-1 ${f}
+done
+
+echo '$'

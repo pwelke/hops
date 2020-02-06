@@ -1,0 +1,8 @@
+#!/bin/bash
+
+freq=$1
+data=$2
+
+nGraphs=`grep '^#' < ${data} | wc -l`
+theta=`python2 -c "print int(round(${nGraphs}.0 * (${freq} * 0.01)))"`
+echo ${theta}

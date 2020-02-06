@@ -1,0 +1,204 @@
+#!/usr/bin/env python2
+
+import os
+import sys
+
+def getMap(mapFile):
+	''' Given a filename of a file containing exactly one number per line, 
+	return a map that has these integers as keys and 1 as value for each.'''
+	map = dict()
+	f = open(mapFile, 'r')
+	for line in f:
+		map[int(line)] = 1
+	f.close()
+	return map
+
+def getSet(mapFile):	
+	''' Given a filename of a file containing exactly one number per line, 
+	return a set that contains these integers.'''
+	map = set()
+	f = open(mapFile, 'r')
+	for line in f:
+		map.add(int(line))
+	f.close()
+	return map
+
+def filterBySet(file, set, outfile):
+	''' Given a file that contains a pair of numbers per line and a set of integers,
+	write a file that contains only those lines, where the second number is contained
+	in the set.'''
+	f = open(file, 'r')
+	g = open(outfile, 'w')
+	for line in f:
+		pair = [int(x) for x in line.split()]
+		if pair[1] in set:
+			g.write(line)
+	f.close()
+	g.close()
+
+def filterByMap(file, map, outfile='results/counts.filtered'):
+	''' Given a file that contains a pair of numbers per line and a map,
+	write a file that contains only those lines, where the second number is contained
+	in the key set of the map.'''
+	f = open(file, 'r')
+	g = open(outfile, 'w')
+	for line in f:
+		pair = [int(x) for x in line.split()]
+		if pair[1] in map:
+			g.write(line)
+	f.close()
+	g.close()
+
+def createSVMFile(filteredfile, outfile):
+	''' Given filteredfile containing a pair of numbers x y per line, create a new file containing 
+	a sorted list of y's in each line given by x'''
+	map = dict()
+	
+	f = open(filteredfile, 'r')
+	for line in f:
+		pair = [int(x) for x in line.split()]
+		if pair[0] not in map:
+			map[pair[0]] = list()
+		map[pair[0]].append(pair[1])
+	f.close()
+
+	g = open(outfile, 'w')
+	keys = map.keys()
+	keys.sort()
+	for key in keys:
+		line = map[key]
+		line.sort()
+		g.write(str(key) + ' ')
+		g.write(' '.join([str(x) + ':1' for x in line]))
+		g.write('\n')
+	g.close()
+
+def createLabeledSVMFile(filteredfile, outfile, labels):
+	''' Given filteredfile containing a pair of numbers x y per line, create a new file containing 
+	a sorted list of y's in each line given by x. First column contains a label given by label[x]'''
+	map = dict()
+	
+	f = open(filteredfile, 'r')
+	for line in f:
+		pair = [int(x) for x in line.split()]
+		if pair[0] not in map:
+			map[pair[0]] = list()
+		map[pair[0]].append(pair[1])
+	f.close()
+
+	g = open(outfile, 'w')
+	# use all graphs in the database as elements. Thus there might be lines in the resulting file
+	# that only contain a label and no features. 
+	allgraphs = labels.keys()
+	allgraphs.sort()
+	sys.stderr.write('there are ' + str(len(allgraphs)) + 'graphs\n')
+	for key in allgraphs:		
+		if labels[key] == 0:
+			continue
+		try:
+			line = map[key]
+			line.sort()
+		except KeyError:
+			line = list()
+		g.write(str(labels[key]) + ' ')
+		g.write(' '.join([str(x) + ':1' for x in line]))
+		g.write('\n')
+	g.close()
+
+def getLabels(infile):
+	''' Reads a file in the format of AIDS99.txt and returns a map
+	graph number -> activity'''
+	labels = dict()
+	f = open(infile, 'r')
+	for line in f:
+		if line.startswith('$'):
+			break
+		if line.startswith('#'):
+			data = line.split()
+			labels[int(data[1])] = int(data[2])
+	f.close()
+	return labels
+
+def changeLabels(labels, switch):
+	''' In labels, 
+
+	0 = inactive
+	1 = moderately active
+	2 = active
+
+	want to change that to 
+
+	1 = positive class
+	-1 = negative class
+	0 = filter out, when selecting.
+
+	thus, switch may be one of the following:
+
+	AvsI = 0->-1 2->1 1->0
+	AvsMI = 0->-1 1->-1 2->1
+	AMvsI = 0->-1 1->1 2->1'''
+	map = dict()
+	if switch == 'AvsI':
+		map[0] = -1
+		map[1] = 0
+		map[2] = 1
+
+	if switch == 'AvsMI':
+		map[0] = -1
+		map[1] = -1
+		map[2] = 1
+
+	if switch == 'AMvsI':
+		map[0] = -1
+		map[1] = 1
+		map[2] = 1
+
+	if switch == 'none':
+		map[-1] = -1
+		map[1] = 1
+
+	for key in labels.keys():
+		labels[key] = map[labels[key]]
+
+
+def run(prefixOfOutputFiles, inputFile, labelFlag):
+	
+	labels = getLabels(inputFile)
+	changeLabels(labels, labelFlag)
+
+	interestingFeatures = getMap(prefixOfOutputFiles + '.features')
+	filterByMap(prefixOfOutputFiles + '.counts', interestingFeatures, prefixOfOutputFiles + '.countsFrequent')
+
+	createLabeledSVMFile(prefixOfOutputFiles + '.countsFrequent', prefixOfOutputFiles + '.svmFile' + labelFlag, labels)
+
+if __name__ == "__main__":
+	if len(sys.argv) < 4:
+		print '''
+Deprecated legacy code. For lwg output conversion use 
+    ../features/lwgtid2libsvm.py
+
+Convert output of lwm to input of libSVM.
+Usage: generateSVMFile ORIGINALFILE LWMFILEPREFIX LABELOP
+
+where ORIGINALFILE is a file in AIDS99.txt format that contains
+the original data set. This file is used to obtain label information 
+for the graphs that were processed by lwm.
+
+LWMFILEPREFIX is the common prefix of the output files of lwm.
+lwm produces three outputfiles: LWMFILEPREFIX.patterns, 
+LWMFILEPREFIX.counts, and LWMFILEPREFIX.features . These files contain
+the frequent pattern information for each processed graph.
+
+LABELOP specifies the modification of the labels of the graphs.
+In an AIDS99 formatted file, there are three labels: 0 = inactive,
+1 = moderately active and 2 = active. We want to change these to:
+1 = positive class, -1 = negative class, and 0 = filter out, when 
+selecting. As a switch you can therefore select between one of the 
+following three actions:
+
+AvsI = 0->-1 2->1 1->0
+AvsMI = 0->-1 1->-1 2->1
+AMvsI = 0->-1 1->1 2->1
+none = -1->-1 1->1'''
+
+	run(sys.argv[2], sys.argv[1], sys.argv[3])
