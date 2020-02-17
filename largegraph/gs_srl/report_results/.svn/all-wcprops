@@ -1,0 +1,269 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/scm/svn/graph_sampling/!svn/ver/364/report_results
+END
+report_false_furer.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/scm/svn/graph_sampling/!svn/ver/282/report_results/report_false_furer.py
+END
+getStatistics.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/scm/svn/graph_sampling/!svn/ver/1/report_results/getStatistics.py
+END
+check_pre_selected.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/scm/svn/graph_sampling/!svn/ver/1/report_results/check_pre_selected.py
+END
+report_furer_approach.py
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/scm/svn/graph_sampling/!svn/ver/219/report_results/report_furer_approach.py
+END
+report_exhaustive_approach.py
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/scm/svn/graph_sampling/!svn/ver/190/report_results/report_exhaustive_approach.py
+END
+directory_manager.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/scm/svn/graph_sampling/!svn/ver/7/report_results/directory_manager.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/scm/svn/graph_sampling/!svn/ver/1/report_results/__init__.py
+END
+fix_parent_specification.py
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/scm/svn/graph_sampling/!svn/ver/1/report_results/fix_parent_specification.py
+END
+check_interrupted_data_if_complete.py
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/scm/svn/graph_sampling/!svn/ver/1/report_results/check_interrupted_data_if_complete.py
+END
+visualization.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/scm/svn/graph_sampling/!svn/ver/1/report_results/visualization.py
+END
+delete_patterns_non_selected.py
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/scm/svn/graph_sampling/!svn/ver/205/report_results/delete_patterns_non_selected.py
+END
+false_furer_report_orderings.py
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/scm/svn/graph_sampling/!svn/ver/285/report_results/false_furer_report_orderings.py
+END
+filter_batch_results.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/scm/svn/graph_sampling/!svn/ver/1/report_results/filter_batch_results.py
+END
+detect_most_occurring_labels_in_selected_graphs.py
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/scm/svn/graph_sampling/!svn/ver/1/report_results/detect_most_occurring_labels_in_selected_graphs.py
+END
+generate_commands_for_reporting.py
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/scm/svn/graph_sampling/!svn/ver/1/report_results/generate_commands_for_reporting.py
+END
+random_report.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/scm/svn/graph_sampling/!svn/ver/294/report_results/random_report.py
+END
+NoResults_exception.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/scm/svn/graph_sampling/!svn/ver/1/report_results/NoResults_exception.py
+END
+create_csv_batch_file.py
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/scm/svn/graph_sampling/!svn/ver/1/report_results/create_csv_batch_file.py
+END
+scriptExtractAllInterrupted.py
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/scm/svn/graph_sampling/!svn/ver/1/report_results/scriptExtractAllInterrupted.py
+END
+check_isomorphism_selected.py
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/scm/svn/graph_sampling/!svn/ver/1/report_results/check_isomorphism_selected.py
+END
+furer_report.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/scm/svn/graph_sampling/!svn/ver/358/report_results/furer_report.py
+END
+FACT_make_selected_results_csv.py
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/scm/svn/graph_sampling/!svn/ver/331/report_results/FACT_make_selected_results_csv.py
+END
+get_no_obd_patterns.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/scm/svn/graph_sampling/!svn/ver/1/report_results/get_no_obd_patterns.py
+END
+save_as_gpickle.py
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/scm/svn/graph_sampling/!svn/ver/1/report_results/save_as_gpickle.py
+END
+delete_pickles_in_patterns_paths.py
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/scm/svn/graph_sampling/!svn/ver/1/report_results/delete_pickles_in_patterns_paths.py
+END
+report_random_sampling_approach.py
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/scm/svn/graph_sampling/!svn/ver/226/report_results/report_random_sampling_approach.py
+END
+false_furer_report.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/scm/svn/graph_sampling/!svn/ver/293/report_results/false_furer_report.py
+END
+.~lock.generalDict.csv#
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/scm/svn/graph_sampling/!svn/ver/1/report_results/.~lock.generalDict.csv
+END
+report_results.py
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/scm/svn/graph_sampling/!svn/ver/294/report_results/report_results.py
+END
+batch_info.py
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/scm/svn/graph_sampling/!svn/ver/1/report_results/batch_info.py
+END
+make_excel_files_results.py
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/scm/svn/graph_sampling/!svn/ver/311/report_results/make_excel_files_results.py
+END
+plot_readable_format.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/scm/svn/graph_sampling/!svn/ver/1/report_results/plot_readable_format.py
+END
+.~lock.fdictGENERAL_MINE.csv#
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/scm/svn/graph_sampling/!svn/ver/1/report_results/.~lock.fdictGENERAL_MINE.csv
+END
+get_patterns_info.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/scm/svn/graph_sampling/!svn/ver/1/report_results/get_patterns_info.py
+END
+move_non_selected_results_and_patterns.py
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/scm/svn/graph_sampling/!svn/ver/1/report_results/move_non_selected_results_and_patterns.py
+END
+delete_result_folders.py
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/scm/svn/graph_sampling/!svn/ver/169/report_results/delete_result_folders.py
+END
+count_processed_patterns.py
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/scm/svn/graph_sampling/!svn/ver/100/report_results/count_processed_patterns.py
+END
+exhaustive_report.py
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/scm/svn/graph_sampling/!svn/ver/41/report_results/exhaustive_report.py
+END
+check_status.py
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/scm/svn/graph_sampling/!svn/ver/302/report_results/check_status.py
+END
+make_selected_results_csv.py
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/scm/svn/graph_sampling/!svn/ver/296/report_results/make_selected_results_csv.py
+END
+remove_file_for_results.py
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/scm/svn/graph_sampling/!svn/ver/151/report_results/remove_file_for_results.py
+END
+process_results_pattern_size.py
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/scm/svn/graph_sampling/!svn/ver/1/report_results/process_results_pattern_size.py
+END
+percentage_timedout.py
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/scm/svn/graph_sampling/!svn/ver/1/report_results/percentage_timedout.py
+END
+estimate_processed_pattern_count.py
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/scm/svn/graph_sampling/!svn/ver/364/report_results/estimate_processed_pattern_count.py
+END

@@ -1,0 +1,388 @@
+'''
+Created on Apr 17, 2015
+
+@author: irma
+'''
+import numpy,math
+import os  
+import time  
+import pickle
+import copy
+import experiments
+from experiments import sampler_general_ex as smplr
+from experiments import sampling_utils as su
+from decimal import Decimal, getcontext
+
+'Standard Furer reporting at the end of the execution'
+def report(output_path,detailed_result_path,fudicts,plot_result_dict,all_furer_times,exhaustive_approach_result_file,data_graph,pattern,Plist,NLIMIT_values,repetitions,pattern_file_name,fdict_exhaustive,iteration_counter_n_limit,n_limit_embeddings):    
+    if (len(fudicts)==0):
+        with open(os.path.join(output_path,'no_results.info'), 'wb') as file:
+            file.write("No results for random - empty fudicts!")
+    
+
+    pickout = open(os.path.join(output_path,'fudicts.pickle'), 'wb')
+    pickle.dump(fudicts, pickout)
+    pickout.close()
+    
+    pickout = open(os.path.join(output_path,'all_furer_times.pickle'), 'wb')
+    pickle.dump(all_furer_times, pickout)
+    pickout.close()
+    
+    picklename = os.path.join(exhaustive_approach_result_file,"fdict_exhaustive_%s.pickle" % pattern_file_name)
+    pickin = open(picklename, 'rb')
+    fdict_exhaustive = pickle.load(pickin)
+    
+    smplr.complete_combinations(fdict_exhaustive, data_graph,  pattern,  Plist)      # add zeros to all not present combinations
+    smplr.smooth(fdict_exhaustive,  fdict_exhaustive)     # Laplace smoothing also for the exhaustive
+    
+    for nli in range(len(NLIMIT_values)):
+        print "ITERATION COUNTER FOR THIS LIMIT: ",iteration_counter_n_limit[nli]
+        print "REPORTING LIMIT: ",NLIMIT_values[nli]
+        plot_result_dict[NLIMIT_values[nli]] = {}
+        furer_results_KLD = []
+        furer_results_bhatta = []
+        furer_results_hellinger = []
+        furer_times = []
+        
+        for i in range(repetitions):
+            furer_times.append(all_furer_times[i][nli])
+            
+            fdict_limited = fudicts[i][nli]
+            smplr.smooth(fdict_limited,  fdict_exhaustive)    # smoothing to avoid zeros
+            fdict_Furer = fudicts[i][nli]   
+            
+            [pde,  trash_list,  default_key] = smplr.make_pd_general_kickout_default(fdict_exhaustive,  trash_factor=0.01)     # we remove rows where frequencies do not reach 1%            
+            
+            if len(pde) < 1:
+                print "WARNING: bad (not enough present) pattern or too high trash threshold! STOPPING."
+                break
+            
+            emb=n_limit_embeddings[nli]
+            
+            [pdl,  tl,  dk] = smplr.make_pd_general_kickout_default_limited(fdict_limited,  trash_list,  default_key)
+            [pdf ,  tl,  dk]= smplr.make_pd_general_kickout_default_limited(fdict_Furer,  trash_list,  default_key)
+            print "Appending results ..."
+            furer_results_KLD.append(su.avg_kld(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+            furer_results_bhatta.append(su.avg_bhatta(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+            furer_results_hellinger.append(su.avg_hellinger(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+        plot_result_dict[NLIMIT_values[nli]]["furer_KLD"] = (numpy.mean(furer_results_KLD),  numpy.std(furer_results_KLD,  ddof=1))
+        plot_result_dict[NLIMIT_values[nli]]["furer_BHT"] = (numpy.mean(furer_results_bhatta),  numpy.std(furer_results_bhatta,  ddof=1))
+        plot_result_dict[NLIMIT_values[nli]]["furer_HEL"] = (numpy.mean(furer_results_hellinger),  numpy.std(furer_results_hellinger,  ddof=1))
+        plot_result_dict[NLIMIT_values[nli]]["furer_times"] = (numpy.mean(furer_times),  numpy.std(furer_times,  ddof=1))
+
+        result_file_name = detailed_result_path+"/"+"res_" + pattern_file_name + pattern_file_name+"."+str(repetitions) +"x"+str(NLIMIT_values[nli])+".result"
+        resultfile = open(result_file_name,  'w')
+        resultfile.write('Furer\n')
+        resultfile.write("experiment on graph: " + str(pattern_file_name) +" and pattern: "+pattern_file_name+"\n")
+        resultfile.write("NLIMIT: " + str(NLIMIT_values[nli]) +"\n")
+        resultfile.write("repetitions: " + str(repetitions) +"\n")
+        resultfile.write(" " +"\n")
+        resultfile.write("average average KLD on randomnode: " + str(numpy.mean(furer_results_KLD))  + " with SSTD: " + str(numpy.std(furer_results_KLD,  ddof=1)) +"\n")
+        resultfile.write("average average bhatta on randomnode: " + str(numpy.mean(furer_results_bhatta))  + " with SSTD: " + str(numpy.std(furer_results_bhatta,  ddof=1)) +"\n")
+        resultfile.write("average average hellinger on randomnode: " + str(numpy.mean(furer_results_hellinger))  + " with SSTD: " + str(numpy.std(furer_results_hellinger,  ddof=1)) +"\n")
+        resultfile.write(" " +"\n")
+        resultfile.write("Random node took per run on average: " +str(numpy.mean(furer_times)) + " seconds." +"\n")
+        resultfile.write('-----DETAILED RESULTS-----' +"\n")
+        resultfile.write('randnode_results_KLD :' + str(furer_results_KLD) +"\n")
+        resultfile.write('randnode_results_bhatta :' + str(furer_results_bhatta) +"\n")
+        resultfile.write('randnode_results_hellinger :' + str(furer_results_hellinger) +"\n")
+        resultfile.write('randnode_times :' + str(furer_times) +"\n")
+        resultfile.write('Nr embeddings for limit: '+str(emb))
+        resultfile.close()
+
+
+def report_monitoring_my_version(monitoring_marks,output_path,detailed_result_path,monitoring_reports,exhaustive_approach_result_file,data_graph,pattern,Plist,repetitions,pattern_file_name,fdict_exhaustive,nr_non_observed_combinations,write):
+      #CREATE DIRECTORY THAT WILL CONTAIN RESULTS FOR EACH TIME INSTANCE     
+      dict={}
+      duration=[]
+      begin=0
+      nr_iterations=[]
+      sum_of_embeddings=[]
+      sum_of_squares=[]
+      embeddings_estimate=[]
+      sum_of_root_node_emb=[]
+      sum_of_squares_root_node_emb=[]
+      
+      for time_int in monitoring_marks:
+          duration.append(time_int-begin)
+          begin=time_int
+      
+      #the problem might be that some runs finished earlier, and some later.
+      for i in xrange(len(monitoring_marks)):
+          for key_iter in monitoring_reports.keys():
+              if not(monitoring_marks[i] in dict.keys()):
+                  dict[monitoring_marks[i]]=[]
+              try:
+                  dict[monitoring_marks[i]].append(monitoring_reports[key_iter][i])
+                  nr_iterations.append(monitoring_reports[key_iter][i].nr_iterations)
+                  sum_of_embeddings.append(monitoring_reports[key_iter][i].sum_nr_embeddings)
+                  sum_of_squares.append(monitoring_reports[key_iter][i].sum_of_the_square_embeddings)
+                  embeddings_estimate.append(monitoring_reports[key_iter][i].embeddings_estimate)
+                  sum_of_root_node_emb.append(monitoring_reports[key_iter][i].sum_nr_extra_embeddings)
+                  sum_of_squares_root_node_emb.append(monitoring_reports[key_iter][i].sum_of_the_extra_square_embeddings)
+              except IndexError:
+                  print "Something wrong"
+                  break
+      print "NR ITERATIONS: ",nr_iterations
+      print "sum_of_embeddings: ",sum_of_embeddings
+      print "sum_of_squares: ",sum_of_squares
+      
+      snapshot_inits=[]
+      for i in range(repetitions):
+          snapshot_inits.append(0)
+      
+      counter_duration=0
+      counter=0
+      
+      for time_snapshot in monitoring_marks:
+              experiments.globals.current_time_snapshot=time_snapshot
+              print "Processed ",counter," out of: ",len(monitoring_marks)
+              furer_results_KLD = []
+              furer_results_bhatta = []
+              furer_results_hellinger = []
+              furer_times = []
+              observed_nodes=[]
+              observed_nodes_difference_per_snapshot=[]
+              
+              snapshot_directory_path=os.path.join(detailed_result_path,)
+              if not(os.path.exists(snapshot_directory_path)):
+                  os.mkdir(snapshot_directory_path)
+              snapshot_directory_file=os.path.join(snapshot_directory_path,'res_time_'+str(time_snapshot)+'.info')
+              
+              
+              if write==True:
+                  fdict_furer_temp=dict[time_snapshot]
+                  fdicts_Furer=[]
+                  
+                  for f in fdict_furer_temp:
+                      fdicts_Furer.append(f.current_fdict)
+                      observed_nodes.append(f.number_of_observed_nodes)
+                  
+                  if len(fdict_furer_temp)==0:
+                      continue
+        
+                  for i in range(len(fdict_furer_temp)):
+                      experiments.globals.nr_iterations=nr_iterations[i]
+                      fdict_limited = fdicts_Furer[i]
+                      fdict_Furer=fdicts_Furer[i]
+                      #for k in fdict_Furer:
+                      #    fdict_Furer[k]=fdict_Furer[k]*experiments.globals.nr_iterations
+                      observed_nodes_difference_per_snapshot.append(observed_nodes[i]-snapshot_inits[i])
+                      snapshot_inits[i]=observed_nodes[i]
+                      print "Making pde Exhaustive"
+                      #for k in fdict_exhaustive.keys():
+                      #   if k==((u'location', u'Location_id_705003'), (u'function', u'Func_id_40')):
+                      #       print k,fdict_exhaustive[k]
+                      [pde,trash,default_key] = smplr.make_pd_general_kickout_default_my_version(fdict_exhaustive)
+                      print "Made pde Exhaustive"
+                      print "Len PDE: ",len(pde)
+                      if len(pde) < 1:
+                          print "WARNING: bad (not enough present) pattern or too high trash threshold! STOPPING."
+                          break
+                      print "Completing combinations for fdict Furer"
+                      
+                      nr_possible_combinations=smplr.complete_combinations_1(fdict_Furer, data_graph,  pattern,  Plist)
+                      print "Completed combinations for fdict Furer"
+                      print "Nr poss combos: ",nr_possible_combinations
+                      #print "Making pdf for Furer"
+                      pdf= smplr.make_pd_general_kickout_default_limited_my_version(fdict_Furer)
+                      print "Made pdf for Furer"
+                      print "Len pdf: ",len(pdf)
+                      print "Furer ..."
+                      print "EXHAUSTIVE:"
+                      #for k in pde.keys():
+                      #      print "KEY: ",k
+                      #      for e in pde[k]:
+                      #          print e
+                      #print "SMPL:"
+                      #for k in pdf.keys():
+                      #      print "KEY: ",k
+                      #      for e in pdf[k]:
+                      #          print e
+                      furer_results_KLD.append(su.avg_kld(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+                      print "HALO?"
+                      furer_results_bhatta.append(su.avg_bhatta(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+                      furer_results_hellinger.append(su.avg_hellinger(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+                    
+          
+              print "Writing to: ",snapshot_directory_file
+              resultfile = open(snapshot_directory_file,  'w')
+              resultfile.write('Furer\n')
+              resultfile.write("experiment on graph: " + str(pattern_file_name) +" and pattern: "+pattern_file_name+"\n")
+              resultfile.write("repetitions (for this time snapshot): " + str(repetitions) +"\n")
+              resultfile.write(" " +"\n")
+              print "KLD: ",str(numpy.mean(furer_results_KLD))
+              resultfile.write("average average KLD on furer: " + str(numpy.mean(furer_results_KLD))  + " with SSTD: " + str(numpy.std(furer_results_KLD,  ddof=1)) +"\n")
+              resultfile.write("average average bhatta on furer: " + str(numpy.mean(furer_results_bhatta))  + " with SSTD: " + str(numpy.std(furer_results_bhatta,  ddof=1)) +"\n")
+              resultfile.write("average average hellinger on furer: " + str(numpy.mean(furer_results_hellinger))  + " with SSTD: " + str(numpy.std(furer_results_hellinger,  ddof=1)) +"\n")
+              resultfile.write(" " +"\n")
+              resultfile.write('-----DETAILED RESULTS-----' +"\n")
+              resultfile.write('furer_results_KLD : ' + str(furer_results_KLD) +"\n")
+              resultfile.write('furer_results_bhatta : ' + str(furer_results_bhatta) +"\n")
+              resultfile.write('furer_results_hellinger : ' + str(furer_results_hellinger) +"\n")
+              resultfile.write('avg #nodes observed : ' + str(numpy.mean(observed_nodes)) +"\n")
+              resultfile.write('# nodes per time interval per run :' + str((numpy.mean(observed_nodes_difference_per_snapshot)/duration[counter_duration])) +"\n")
+              resultfile.write('avg difference of nodes observed from previous snapshot :' + str(numpy.mean(observed_nodes_difference_per_snapshot)) +"\n")          
+              resultfile.write("------------------------------------ Sampling info ------------------------------\n")
+              resultfile.write('number of sampling iterations : ' + str(nr_iterations[counter])+"\n")    
+              if sum_of_squares_root_node_emb[counter]==0 and sum_of_root_node_emb[counter]==0:
+                 nr_embeddings_temp=sum_of_embeddings[counter]/nr_iterations[counter]
+              else:
+                 nr_embeddings_temp=sum_of_root_node_emb[counter]/nr_iterations[counter] 
+              #embeddings_estimate[counter]
+              print "Writing to file: ",nr_embeddings_temp
+              resultfile.write('average of embeddings : ' + str(nr_embeddings_temp)+"\n")   
+              if sum_of_squares_root_node_emb[counter]==0 and sum_of_root_node_emb[counter]==0:
+                  #we do the old standard deviation
+                  print "Old stdev"
+                  print sum_of_squares[counter]
+                  print sum_of_embeddings[counter]
+                  a=Decimal(sum_of_squares[counter])-(Decimal(math.pow(sum_of_embeddings[counter], 2))/Decimal(float(nr_iterations[counter])))
+                  stdeviation=math.sqrt(a/Decimal(float((nr_iterations[counter]-1))))
+              else:
+                  a=Decimal(sum_of_squares_root_node_emb[counter])-(Decimal(math.pow(sum_of_root_node_emb[counter], 2))/Decimal(float(nr_iterations[counter])))
+                  if a>0:
+                    stdeviation=math.sqrt(a/Decimal(float((nr_iterations[counter]-1))))
+                  else:
+                    stdeviation=0
+              print "old stdev: ",stdeviation
+              resultfile.write('stdeviation of # embeddings: ' + str(stdeviation)+"\n") 
+              resultfile.close()
+              counter+=1
+              counter_duration+=1       
+ 
+    
+'This method is used to report results gathered at a specific time points (given in monitoring_marks). There is no plotting'
+def report_monitoring(monitoring_marks,output_path,detailed_result_path,monitoring_reports,exhaustive_approach_result_file,data_graph,pattern,Plist,repetitions,pattern_file_name,fdict_exhaustive):
+      #CREATE DIRECTORY THAT WILL CONTAIN RESULTS FOR EACH TIME INSTANCE     
+      dict={}
+      
+      duration=[]
+      begin=0
+      nr_iterations=[]
+      sum_of_embeddings=[]
+      sum_of_squares=[]
+      embeddings_estimate=[]
+      sum_of_root_node_emb=[]
+      sum_of_squares_root_node_emb=[]
+      
+      for time_int in monitoring_marks:
+          duration.append(time_int-begin)
+          begin=time_int
+      
+      #the problem might be that some runs finished earlier, and some later.
+      for i in xrange(len(monitoring_marks)):
+          for key_iter in monitoring_reports.keys():
+              if not(monitoring_marks[i] in dict.keys()):
+                  dict[monitoring_marks[i]]=[]
+              try:
+                  dict[monitoring_marks[i]].append(monitoring_reports[key_iter][i])
+                  nr_iterations.append(monitoring_reports[key_iter][i].nr_iterations)
+                  sum_of_embeddings.append(monitoring_reports[key_iter][i].sum_nr_embeddings)
+                  sum_of_squares.append(monitoring_reports[key_iter][i].sum_of_the_square_embeddings)
+                  embeddings_estimate.append(monitoring_reports[key_iter][i].embeddings_estimate)
+                  sum_of_root_node_emb.append(monitoring_reports[key_iter][i].sum_nr_extra_embeddings)
+                  sum_of_squares_root_node_emb.append(monitoring_reports[key_iter][i].sum_of_the_extra_square_embeddings)
+                  
+              except IndexError:
+                  break
+      print "NR ITERATIONS: ",nr_iterations
+      print "sum_of_embeddings: ",sum_of_embeddings
+      print "sum_of_squares: ",sum_of_squares
+      snapshot_inits=[]
+      for i in range(repetitions):
+          snapshot_inits.append(0)     
+      counter_duration=0
+      counter=0
+      for time_snapshot in monitoring_marks:
+          if counter==1:
+              break
+          print "Processed ",counter," out of: ",len(monitoring_marks)
+          furer_results_KLD = []
+          furer_results_bhatta = []
+          furer_results_hellinger = []
+          furer_times = []
+          observed_nodes=[]
+          observed_nodes_difference_per_snapshot=[]
+          
+          snapshot_directory_path=os.path.join(detailed_result_path,)
+          if not(os.path.exists(snapshot_directory_path)):
+              os.mkdir(snapshot_directory_path)
+          snapshot_directory_file=os.path.join(snapshot_directory_path,'res_time_'+str(time_snapshot)+'.info')
+          
+          fdict_furer_temp=dict[time_snapshot]
+          
+          fdicts_Furer=[]
+          
+          for f in fdict_furer_temp:
+              fdicts_Furer.append(f.current_fdict)
+              observed_nodes.append(f.number_of_observed_nodes)
+          
+          if len(fdict_furer_temp)==0:
+              continue
+
+          for i in range(len(fdict_furer_temp)):
+              fdict_limited = fdicts_Furer[i]
+              smplr.smooth(fdict_limited,  fdict_exhaustive)    # smoothing to avoid zeros
+              fdict_Furer=fdicts_Furer[i]
+              observed_nodes_difference_per_snapshot.append(observed_nodes[i]-snapshot_inits[i])
+              snapshot_inits[i]=observed_nodes[i]
+              [pde,  trash_list,  default_key] = smplr.make_pd_general_kickout_default(fdict_exhaustive,  trash_factor=0.01)
+              #print "Exhaustive dict: ",pde
+              if len(pde) < 1:
+                  print "WARNING: bad (not enough present) pattern or too high trash threshold! STOPPING."
+                  break
+              [pdf ,  tl,  dk]= smplr.make_pd_general_kickout_default_limited(fdict_Furer,  trash_list,  default_key)
+              #with open('make_pdf_general_kickout_default_MARTIN.csv','w') as f:
+              #    for k in pdf.keys():
+              #        f.write(str(k)+';'+str(pdf[k])+'\n')
+              furer_results_KLD.append(su.avg_kld(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+              #print "KLD: ",su.avg_kld(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf))
+              furer_results_bhatta.append(su.avg_bhatta(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+              furer_results_hellinger.append(su.avg_hellinger(smplr.transform_to_ptable(pde), smplr.transform_to_ptable(pdf)))
+                
+          
+          print "Writing to: ",snapshot_directory_file
+          resultfile = open(snapshot_directory_file,  'w')
+          resultfile.write('Furer\n')
+          resultfile.write("experiment on graph: " + str(pattern_file_name) +" and pattern: "+pattern_file_name+"\n")
+          resultfile.write("repetitions (for this time snapshot): " + str(repetitions) +"\n")
+          resultfile.write(" " +"\n")
+          print "KLD: ",str(numpy.mean(furer_results_KLD))
+          resultfile.write("average average KLD on furer: " + str(numpy.mean(furer_results_KLD))  + " with SSTD: " + str(numpy.std(furer_results_KLD,  ddof=1)) +"\n")
+          resultfile.write("average average bhatta on furer: " + str(numpy.mean(furer_results_bhatta))  + " with SSTD: " + str(numpy.std(furer_results_bhatta,  ddof=1)) +"\n")
+          resultfile.write("average average hellinger on furer: " + str(numpy.mean(furer_results_hellinger))  + " with SSTD: " + str(numpy.std(furer_results_hellinger,  ddof=1)) +"\n")
+          resultfile.write(" " +"\n")
+          resultfile.write('-----DETAILED RESULTS-----' +"\n")
+          resultfile.write('furer_results_KLD : ' + str(furer_results_KLD) +"\n")
+          resultfile.write('furer_results_bhatta : ' + str(furer_results_bhatta) +"\n")
+          resultfile.write('furer_results_hellinger : ' + str(furer_results_hellinger) +"\n")
+          resultfile.write('avg #nodes observed : ' + str(numpy.mean(observed_nodes)) +"\n")
+          resultfile.write('# nodes per time interval per run :' + str((numpy.mean(observed_nodes_difference_per_snapshot)/duration[counter_duration])) +"\n")
+          resultfile.write('avg difference of nodes observed from previous snapshot :' + str(numpy.mean(observed_nodes_difference_per_snapshot)) +"\n")          
+          resultfile.write("------------------------------------ Sampling info ------------------------------\n")
+          resultfile.write('number of sampling iterations : ' + str(nr_iterations[counter])+"\n")    
+          if sum_of_squares_root_node_emb[counter]==0 and sum_of_root_node_emb[counter]==0:
+             nr_embeddings_temp=sum_of_embeddings[counter]/nr_iterations[counter]
+          else:
+             nr_embeddings_temp=sum_of_root_node_emb[counter]/nr_iterations[counter] 
+          #embeddings_estimate[counter]
+          print "Writing to file: ",nr_embeddings_temp
+          resultfile.write('average of embeddings : ' + str(nr_embeddings_temp)+"\n")   
+          if sum_of_squares_root_node_emb[counter]==0 and sum_of_root_node_emb[counter]==0:
+              #we do the old standard deviation
+              print "Old stdev"
+              print sum_of_squares[counter]
+              print sum_of_embeddings[counter]
+              a=Decimal(sum_of_squares[counter])-(Decimal(math.pow(sum_of_embeddings[counter], 2))/Decimal(float(nr_iterations[counter])))
+              print a
+              stdeviation=math.sqrt(a/Decimal(float((nr_iterations[counter]-1))))
+          else:
+              print "here"
+              a=Decimal(sum_of_squares_root_node_emb[counter])-(Decimal(math.pow(sum_of_root_node_emb[counter], 2))/Decimal(float(nr_iterations[counter])))
+              stdeviation=math.sqrt(a/Decimal(float((nr_iterations[counter]-1))))
+          print "old stdev: ",stdeviation
+          resultfile.write('stdeviation of # embeddings: ' + str(stdeviation)+"\n") 
+          resultfile.close()
+          counter+=1
+          counter_duration+=1   
