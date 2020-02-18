@@ -524,14 +524,6 @@ class Evaluation:
             print(self.pattern_timeout)
             result_by_algo = {}
             num_by_algo = {}
-            """
-            path = self.results_path  + 'results_' + self.data + "_size" + str(self.tree_pattern_size) + '.txt'
-
-            with open (path, 'r') as f_open:
-                print(path)
-                f_open = cPickle.load(f_open)
-                print(path)
-            """
 
             ###iterations
             counter = 0
@@ -567,23 +559,7 @@ class Evaluation:
             for algo in ["fk_TREE", "fk_AD", "fk_OBD"]:
                 result_by_algo[algo + "_std_dev"] = math.sqrt(result_by_algo[algo + "_std_dev"])
             print(result_by_algo)
-            """                     
 
-                    print()
-                    print(value["name"], value["algo"], value["find_number"]/float(len(value["embedding_data"])))
-                    if value["algo"] in result_by_algo:
-                        result_by_algo[value["algo"]] += value["find_number"]/float(len(value["embedding_data"]))
-                        num_by_algo[value["algo"]] += 1
-                    else:
-                        result_by_algo[value["algo"]] = value["find_number"]/float(len(value["embedding_data"]))
-                        num_by_algo[value["algo"]] = 1
-                    counter += 1
-            print(counter)
-            for key, value in result_by_algo.items():
-                result_by_algo[key] = result_by_algo[key]/(counter/3)
-            print(result_by_algo)
-            print(num_by_algo)
-            """
 
     def PaperEvaluation(self):
         # Define some pattern set for extended evaluations
@@ -610,9 +586,9 @@ class Evaluation:
 
         # Plot of average of some parameter of all patterns of some size for some algorithm
         #Get the average over param for std and sampling iterations
-        self.plot_std_by_param_dict()
+        #self.plot_std_by_param_dict()
 
-        self.plot_by_param_dict()
+        #self.plot_by_param_dict()
 
         #Get the histogramm over all estimated embeddings
         # self.plot_histogramm(["fk_TREE", "fk_OBD", "fk_AD"])
@@ -629,7 +605,7 @@ def main():
 
     
     #Settings used for paper evaluation
-    path = "/home/.../largegraph/HopsExperiments/Experiments" #TODO set your path
+    path = "/home/.../largegraph/HopsExperiments/Experiments"
     ext = "10h"
     for val in [("YEAST", 15), ("WEBKB",  10), ("DBLP",  10), ("FACEBOOK",  10)]:
         evaluate = Evaluation(path=path + val[0] + ext, data_name=val[0], pattern_size=val[1], use_extended_eval=False)
@@ -637,3 +613,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
