@@ -140,7 +140,7 @@ def main():
     approaches: used algorithms from ["exhaustive", "fk_AD", "fk_OBD", "fk_TREE", "random"] (note that at first exhaustive has to be executed, due to implementation of Ravkic et al.)
     """
 
-    main_path = "/home/.../largegraph"
+    main_path = "/home/.../largegraph" #TODO set your path
     #Settings used for paper experiments
     for val in [("YEAST", "yeast", [15]), ("WEBKB", "webkb", [10]), ("DBLP", "dblp", [10]), ("FACEBOOK", "facebook", [6])]:
         for a in val[2]:

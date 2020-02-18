@@ -627,13 +627,13 @@ def main():
     use_extended_eval: extended evaluations (needs extended run of experiments and generates extended data, see paper)
     """
 
-    """
-    Settings used for paper evaluation
+    
+    #Settings used for paper evaluation
+    path = "/home/.../largegraph/HopsExperiments/Experiments" #TODO set your path
+    ext = "10h"
     for val in [("YEAST", 15), ("WEBKB",  10), ("DBLP",  10), ("FACEBOOK",  10)]:
         evaluate = Evaluation(path=path + val[0] + ext, data_name=val[0], pattern_size=val[1], use_extended_eval=False)
         evaluate.PaperEvaluation()
-
-    """
 
 if __name__ == "__main__":
     main()
