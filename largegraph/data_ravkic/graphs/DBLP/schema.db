@@ -1,0 +1,5 @@
+Ref(Paper,Dir)
+Ref(Dir,Paper)
+Dir(Ref,Paper)
+Dir(Paper,Ref)
+Citations(Paper,Value)

@@ -1,0 +1,8 @@
+Friends(User,User)
+Gender(User,Gen)
+Education_type(User,Et)
+Education_degree(User,Ed)
+Language(User,Lan)
+Hometown(User,Ht)
+Birthday(User,Bi)
+User(User)

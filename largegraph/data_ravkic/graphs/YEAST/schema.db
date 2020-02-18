@@ -1,0 +1,7 @@
+Protein(Protein)
+Location(Protein,Loc)
+Function(Protein,Func)
+Phenotype(Protein,Phen)
+ProteinClass(Protein,Pc)
+Interaction(Protein,Protein)
+Enzyme(Protein,Enz)

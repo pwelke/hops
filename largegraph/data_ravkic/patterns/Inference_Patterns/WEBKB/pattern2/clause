@@ -1,0 +1,2 @@
+HasWord(p2,w1) ^ Linked(p1,p2) ^ HasWord(p1, w1) ^ pageclass(p1, +class)
+
