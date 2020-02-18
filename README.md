@@ -10,7 +10,7 @@ The code has been tested on recent Ubuntu Linux distributions (18.04, 19.10).
 
 Set up the experiments and evaluation:
 1. Clone the project
-2. Set up python3 for hops:
+2. Set up python3 conda environment for hops:
    * conda create -n hops python=3.7 joblib matplotlib
    * pip install tikzplotlib
 3. Set up python2 for Ravkic algorithms:
