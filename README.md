@@ -10,14 +10,11 @@ The code has been tested on recent Ubuntu Linux distributions (18.04, 19.10).
 
 Set up the experiments and evaluation:
 1. Clone the project
-2. Unzip **data_ravkic.zip** to your favourite folder *.../YourFolder*
-3. Set up experiments:
-   * in **run_exp.py** set *main_path=".../YourFolder"*
-   * create an folder for output *.../YourOutputFolder*
-   * in **run_exp.py** set *main_out_path=".../YourOutputFolder"*
+2. Set up experiments:
+   * in **run_exp.py** set *main_path=".../largegraph"*
    * run **run_exp.py** with your favourite graph, pattern size and time limit
 4. Set up evaluation:
-   * in **evaluate.py** set *path=".../YourOutputFolder*
+   * in **evaluate.py** set *path=".../largegraph/*
    * run **evaluate.py** for evaluation 
 
 # How To Run Probabilistic Subtree Mining Experiments on Small Graphs

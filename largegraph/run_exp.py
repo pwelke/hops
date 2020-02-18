@@ -140,9 +140,8 @@ def main():
     approaches: used algorithms from ["exhaustive", "fk_AD", "fk_OBD", "fk_TREE", "random"] (note that at first exhaustive has to be executed, due to implementation of Ravkic et al.)
     """
 
-    """
-    main_path = /home/.../DataFolder
-    Settings used for paper experiments
+    main_path = "/home/.../largegraph"
+    #Settings used for paper experiments
     for val in [("YEAST", "yeast", [15]), ("WEBKB", "webkb", [10]), ("DBLP", "dblp", [10]), ("FACEBOOK", "facebook", [6])]:
         for a in val[2]:
             program = Experiment(main_path=main_path,
@@ -152,7 +151,7 @@ def main():
                                  approaches=["exhaustive", "fk_AD", "fk_OBD", "fk_TREE", "random"])
             program.run_experiment()
     
-    """
+    
 
 if __name__ == "__main__":
     main()
