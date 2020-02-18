@@ -31,13 +31,13 @@ class Experiment:
         self.approaches = approaches
 
         # path of the approaches
-        self.approaches_path = self.main_path + '/code/gs_srl/approaches/'
+        self.approaches_path = self.main_path + '/gs_srl/approaches/'
         # path of the graph data
         self.graph_data_path = self.main_path + '/data_ravkic/graphs/'
         # path of the tree patterns
         self.tree_patterns_data = self.main_path + '/data_ravkic/tree_patterns/'
         # path of the import files
-        self.import_path = 'export PYTHONPATH="' + self.main_path + '/code/gs_srl/"'
+        self.import_path = 'export PYTHONPATH="' + self.main_path + '/gs_srl/"'
         # path of the experiments output files
         # output_path = main_path + '/code/HOPS_Experiments/'
         self.output_path = self.main_path + self.main_out_path
