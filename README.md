@@ -10,10 +10,17 @@ The code has been tested on recent Ubuntu Linux distributions (18.04, 19.10).
 
 Set up the experiments and evaluation:
 1. Clone the project
-2. Set up experiments:
+2. Set up python3 for hops:
+   * conda create -n hops python=3.7 joblib matplotlib
+   * pip install tikzplotlib
+3. Set up python2 for Ravkic algorithms:
+   * install python2.7: sudo apt install python2.7 python-pip
+   * sudo apt-get install python-tk
+
+4. Set up experiments:
    * in **run_exp.py** set *main_path=".../largegraph"*
    * run **run_exp.py** with your favourite graph, pattern size and time limit
-4. Set up evaluation:
+5. Set up evaluation:
    * in **evaluate.py** set *path=".../largegraph/*
    * run **evaluate.py** for evaluation 
 
