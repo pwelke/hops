@@ -9,7 +9,7 @@ The code has been tested on recent Ubuntu Linux distributions (18.04, 19.10).
 # How To Run Approximate Counting Experiments on Large Graphs
 
 Set up the experiments and evaluation:
-1. Clone the project
+1. (Clone the project)
 2. Set up python3 conda environment for hops:
    * conda create -n hops python=3.7 joblib matplotlib
    * pip install tikzplotlib
@@ -23,6 +23,14 @@ Set up the experiments and evaluation:
 5. Set up evaluation:
    * in **evaluate.py** set *path=".../largegraph/*
    * run **evaluate.py** for evaluation 
+
+# How To Run Runtime Experiments on Very Large Graphs
+Set up the experiments and evaluation:
+1. (Clone the project)
+2. Download and unzip the graphs "com-amazon.ungraph", "com-orkut.ungraph", "com-lj.ungraph" from https://snap.stanford.edu/data/index.html into the folder snap_big_graphs
+3. Adjust paths in **main_snap.py**
+4. Install the required packages
+5. run **main_snap.py**
 
 # How To Run Probabilistic Subtree Mining Experiments on Small Graphs
 
