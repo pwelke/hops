@@ -1,5 +1,14 @@
 # HOPS
-Code and data for an anonymous KDD submission
+Code and data for the paper
+
+Pascal Welke, Florian Seiffarth, Michael Kamp and Stefan Wrobel:
+HOPS: Probabilistic Subtree Mining for Small and Large Graphs.
+KDD 2020
+
+If you use this work, please cite our paper.
+
+
+# General Notes
 
 You can find the code for experiments and plot generation of Section 6.1: Approximate Counting in Large Graphs in the /largegraph/ folder.
 The code for experiments and plot generation of Section 6.2: Probabilistic Frequent Subtree Mining is located in the /smallgraphs/ folder.
