@@ -3,7 +3,12 @@ Code and data for the paper
 
 Pascal Welke, Florian Seiffarth, Michael Kamp and Stefan Wrobel:
 HOPS: Probabilistic Subtree Mining for Small and Large Graphs.
-KDD 2020
+KDD 2020 
+
+- [bibtex](https://dblp.uni-trier.de/rec/conf/kdd/WelkeSKW20.html?view=bibtex)
+- [official version](https://dl.acm.org/doi/10.1145/3394486.3403180)
+- [free version](https://mlai.cs.uni-bonn.de/publications/welke2020-hops)
+- [short promo video](https://vimeo.com/445583278)
 
 If you use this work, please cite our paper.
 
