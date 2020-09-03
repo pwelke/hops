@@ -1,3 +1,5 @@
+![Illustrative Example](estimate.gif)
+
 # HOPS
 Code and data for the paper
 
